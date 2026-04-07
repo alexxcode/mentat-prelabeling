@@ -1,0 +1,14 @@
+.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: #1e2435; border: 1px solid #2d3552; border-radius: 10px; padding: 2rem; min-width: 360px; max-width: 480px; width: 100%; }
+.modal h2 { font-size: 1.1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 1.5rem; }
+.field { margin-bottom: 1.25rem; }
+.field > label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.5rem; }
+.radioGroup { display: flex; flex-direction: column; gap: 0.4rem; }
+.radio { display: flex; align-items: center; gap: 0.5rem; color: #e2e8f0; font-size: 0.9rem; cursor: pointer; }
+.splitValue { display: block; font-size: 0.8rem; color: #60a5fa; margin-top: 0.4rem; }
+.checkLabel { display: flex; align-items: center; gap: 0.5rem; color: #e2e8f0; font-size: 0.9rem; cursor: pointer; }
+.actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.75rem; }
+.btnCancel { padding: 0.5rem 1rem; background: transparent; border: 1px solid #2d3552; color: #94a3b8; border-radius: 6px; cursor: pointer; }
+.btnExport { padding: 0.5rem 1.2rem; background: #059669; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; }
+.btnExport:hover { background: #047857; }
+.btnExport:disabled { opacity: 0.5; cursor: not-allowed; }

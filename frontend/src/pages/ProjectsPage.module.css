@@ -1,0 +1,17 @@
+.page { min-height: 100vh; background: #0f1117; }
+.header { padding: 1.5rem 2rem; border-bottom: 1px solid #1e2435; }
+.header h1 { font-size: 1.5rem; font-weight: 700; color: #60a5fa; }
+.main { padding: 2rem; max-width: 900px; margin: 0 auto; }
+.form { display: flex; gap: 0.75rem; margin-bottom: 2rem; }
+.input { flex: 1; padding: 0.6rem 1rem; background: #1e2435; border: 1px solid #2d3552; border-radius: 6px; color: #e2e8f0; font-size: 0.95rem; outline: none; }
+.input:focus { border-color: #60a5fa; }
+.btnPrimary { padding: 0.6rem 1.2rem; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.btnPrimary:hover { background: #2563eb; }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.card { background: #1e2435; border: 1px solid #2d3552; border-radius: 8px; padding: 1.25rem; }
+.card h2 { font-size: 1rem; font-weight: 600; color: #e2e8f0; cursor: pointer; margin-bottom: 0.4rem; }
+.card h2:hover { color: #60a5fa; }
+.date { font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; }
+.btnDanger { padding: 0.4rem 0.8rem; background: transparent; border: 1px solid #ef4444; color: #ef4444; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+.btnDanger:hover { background: #ef4444; color: #fff; }

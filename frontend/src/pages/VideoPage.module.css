@@ -1,0 +1,96 @@
+.page { min-height: 100vh; background: #0f1117; }
+.loading { padding: 2rem; color: #64748b; }
+
+.header {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.25rem 2rem; border-bottom: 1px solid #1e2435;
+}
+.back { background: transparent; border: none; color: #60a5fa; cursor: pointer; font-size: 0.9rem; }
+.back:hover { text-decoration: underline; }
+.title { font-size: 1.2rem; font-weight: 700; color: #e2e8f0; margin: 0; }
+
+.main { padding: 2rem; max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+/* ── Card ── */
+.card {
+  background: #1a1f2e; border: 1px solid #2d3552; border-radius: 10px;
+  padding: 1.5rem;
+}
+.cardTitle { font-size: 1rem; font-weight: 700; color: #e2e8f0; margin: 0 0 1rem; }
+.subTitle  { font-size: 0.9rem; font-weight: 600; color: #94a3b8; margin: 1rem 0 0.75rem; }
+.hint { font-size: 0.8rem; color: #64748b; margin: -0.5rem 0 1rem; }
+
+/* ── Progress ── */
+.progressBar { height: 10px; background: #2d3552; border-radius: 6px; overflow: hidden; margin-bottom: 0.4rem; }
+.progressFill { height: 100%; background: linear-gradient(90deg, #3b82f6, #4ade80); border-radius: 6px; transition: width 0.5s ease; }
+.pctLabel { font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; }
+
+.statsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+.statItem { background: #111827; border: 1px solid #2d3552; border-radius: 8px; padding: 0.75rem 1rem; text-align: center; }
+.statValue { display: block; font-size: 1.5rem; font-weight: 700; color: #e2e8f0; }
+.statLabel { display: block; font-size: 0.72rem; color: #64748b; margin-top: 0.25rem; }
+
+/* ── Actions ── */
+.actionRow { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btnPrimary   { padding: 0.5rem 1.2rem; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.875rem; }
+.btnPrimary:hover { background: #2563eb; }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btnSecondary { padding: 0.5rem 1.2rem; background: #1e2435; color: #94a3b8; border: 1px solid #2d3552; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.875rem; }
+.btnSecondary:hover { border-color: #60a5fa; color: #e2e8f0; }
+.btnSecondary.active { border-color: #3b82f6; color: #60a5fa; }
+.btnOutline { padding: 0.5rem 1.2rem; background: transparent; color: #94a3b8; border: 1px solid #3d4a6e; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.875rem; }
+.btnOutline:hover { color: #e2e8f0; border-color: #64748b; }
+.btnOutline:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── GCS Export Panel ── */
+.gcsPanel { margin-top: 1rem; padding: 1rem; background: #111827; border: 1px solid #2d3552; border-radius: 8px; }
+.gcsForm { display: flex; flex-direction: column; gap: 0.75rem; }
+.gcsLabel { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.82rem; color: #94a3b8; }
+.gcsLabel input[type="checkbox"] { width: auto; margin-right: 0.4rem; }
+.gcsInput {
+  background: #1a1f2e; border: 1px solid #2d3552; border-radius: 5px;
+  color: #e2e8f0; padding: 0.4rem 0.6rem; font-size: 0.85rem;
+}
+.gcsInput:focus { outline: none; border-color: #3b82f6; }
+.gcsSelect {
+  background: #1a1f2e; border: 1px solid #2d3552; border-radius: 5px;
+  color: #e2e8f0; padding: 0.4rem 0.6rem; font-size: 0.85rem;
+}
+.gcsButtons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.errorMsg  { color: #f87171; font-size: 0.8rem; }
+
+/* Barra de progreso del job de exportacion */
+.jobProgress { display: flex; flex-direction: column; gap: 0.3rem; }
+.jobProgressBar { height: 6px; background: #2d3552; border-radius: 4px; overflow: hidden; }
+.jobProgressFill { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 4px; transition: width 0.4s ease; }
+.jobProgressLabel { font-size: 0.78rem; color: #94a3b8; }
+.successBox { background: #052e16; border: 1px solid #166534; border-radius: 6px; padding: 0.75rem; font-size: 0.82rem; color: #4ade80; }
+.successBox strong { color: #86efac; }
+.uriList { margin: 0.5rem 0 0; padding-left: 1.2rem; color: #64748b; font-size: 0.78rem; }
+.uriList li { margin-bottom: 0.2rem; word-break: break-all; }
+
+/* ── Labels ── */
+.labelGrid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; min-height: 2rem; }
+.labelChip {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.3rem 0.6rem; border-radius: 20px; border: 1px solid;
+  font-size: 0.82rem;
+}
+.labelDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.labelName { color: #e2e8f0; }
+.labelDel { background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.72rem; padding: 0; line-height: 1; }
+.labelDel:hover { color: #f87171; }
+.emptyLabels { color: #475569; font-size: 0.82rem; }
+
+.addLabelForm { display: flex; gap: 0.5rem; }
+.addLabelInput {
+  flex: 1; background: #111827; border: 1px solid #2d3552; border-radius: 6px;
+  color: #e2e8f0; padding: 0.4rem 0.75rem; font-size: 0.85rem;
+}
+.addLabelInput:focus { outline: none; border-color: #3b82f6; }
+.btnAdd {
+  padding: 0.4rem 1rem; background: #1e3a5f; color: #60a5fa;
+  border: 1px solid #1d4ed8; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+}
+.btnAdd:hover:not(:disabled) { background: #1d4ed8; color: #fff; }
+.btnAdd:disabled { opacity: 0.4; cursor: not-allowed; }

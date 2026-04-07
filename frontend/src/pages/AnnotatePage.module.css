@@ -1,0 +1,79 @@
+/* ---- Layout ---- */
+.page        { height: 100vh; background: #0f1117; display: flex; flex-direction: column; overflow: hidden; }
+.loading     { padding: 2rem; color: #64748b; }
+.header      { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.5rem; border-bottom: 1px solid #1e2435; flex-shrink: 0; }
+.back        { background: transparent; border: none; color: #60a5fa; cursor: pointer; font-size: 0.875rem; }
+.header h1   { flex: 1; font-size: 0.95rem; font-weight: 700; color: #e2e8f0; }
+.frameCounter { font-size: 0.8rem; color: #64748b; }
+
+/* Canvas + controls row (arriba) */
+.topRow      { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+.canvasArea  { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 1rem 1.5rem; overflow: auto; gap: 0.75rem; }
+.controls    { width: 250px; flex-shrink: 0; border-left: 1px solid #1e2435; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; background: #0d0f18; }
+
+/* Filmstrip inferior */
+.filmstrip   { height: 100px; flex-shrink: 0; border-top: 1px solid #1e2435; background: #0d0f18; display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.75rem; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; scrollbar-color: #2d3552 transparent; }
+.filmThumb   { position: relative; flex-shrink: 0; width: 82px; height: 58px; cursor: pointer; border-radius: 4px; border: 2px solid transparent; overflow: hidden; transition: border-color 0.15s; }
+.filmThumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.filmThumbSelected { border-color: #7c3aed !important; }
+.filmThumb:hover .btnDelFrame { opacity: 1; }
+.filmIdx     { position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.65); color: #fff; font-size: 0.6rem; padding: 0.1rem 0.25rem; border-radius: 2px 0 0 0; }
+.btnDelFrame { position: absolute; top: 2px; right: 2px; opacity: 0; background: rgba(220,38,38,0.85); border: none; color: #fff; border-radius: 3px; cursor: pointer; font-size: 0.6rem; padding: 0.1rem 0.3rem; transition: opacity 0.15s; }
+.btnDelFrame:hover { background: #dc2626; }
+
+/* ---- Secciones del panel ---- */
+.section     {}
+.sectionLabel { display: block; font-size: 0.7rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+.input       { width: 100%; padding: 0.45rem 0.7rem; background: #1e2435; border: 1px solid #2d3552; border-radius: 5px; color: #e2e8f0; font-size: 0.85rem; box-sizing: border-box; }
+.hint        { font-size: 0.75rem; color: #64748b; margin-top: 0.4rem; line-height: 1.5; }
+.spinner     { font-size: 0.7rem; }
+
+/* Label chips */
+.labelChips  { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.4rem; }
+.labelChip   { background: #1e2435; border: 1px solid #2d3552; border-radius: 4px; color: #94a3b8; font-size: 0.75rem; padding: 0.18rem 0.5rem; cursor: pointer; transition: background 0.12s, color 0.12s; }
+.labelChip:hover { background: #2d3552; color: #e2e8f0; }
+.labelChipActive { background: #3b2f6e; border-color: #7c3aed; color: #c4b5fd; font-weight: 600; }
+
+/* Botones de modo */
+.modeRow     { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+.modeBtn     { flex: 1; min-width: 0; padding: 0.3rem 0.25rem; font-size: 0.7rem; background: #1e2435; border: 1px solid #2d3552; border-radius: 4px; color: #94a3b8; cursor: pointer; text-align: center; transition: background 0.12s; white-space: nowrap; }
+.modeBtn:hover { background: #2d3552; color: #e2e8f0; }
+.modeBtnActive { background: #3b2f6e; border-color: #7c3aed; color: #c4b5fd; font-weight: 600; }
+.btnGetOptions { width: 100%; padding: 0.4rem; background: #1e2435; border: 1px dashed #475569; border-radius: 4px; color: #94a3b8; font-size: 0.75rem; cursor: pointer; }
+
+/* Lista de anotaciones */
+.annList     { display: flex; flex-direction: column; gap: 0.3rem; max-height: 260px; overflow-y: auto; }
+.annItem     { display: flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.55rem; background: #1a1f2e; border: 1px solid transparent; border-radius: 4px; font-size: 0.82rem; color: #e2e8f0; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+.annItem:hover { background: #1e2435; }
+.annItemSelected { border-color: #7c3aed !important; background: #2a1f4e !important; }
+.labelDot    { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.annName     { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badgeOk     { font-size: 0.6rem; background: #14532d; color: #4ade80; padding: 0.12rem 0.35rem; border-radius: 3px; flex-shrink: 0; font-weight: 700; }
+.badgeProp   { font-size: 0.6rem; background: #1e3a5f; color: #60a5fa; padding: 0.12rem 0.35rem; border-radius: 3px; flex-shrink: 0; }
+.annActions  { display: flex; gap: 0.2rem; flex-shrink: 0; }
+.btnPropOne  { background: #1e3a5f; border: none; color: #60a5fa; border-radius: 3px; cursor: pointer; padding: 0.12rem 0.35rem; font-size: 0.7rem; }
+.btnPropOne:hover { background: #2a4a7f; }
+.btnPropOne:disabled { opacity: 0.4; cursor: not-allowed; }
+.btnDel      { background: #3a1e2a; border: none; color: #f87171; border-radius: 3px; cursor: pointer; padding: 0.12rem 0.35rem; font-size: 0.7rem; }
+.btnDel:hover { background: #5a2a3a; }
+.btnDel:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Propagacion */
+.propagateButtons { display: flex; flex-direction: column; gap: 0.45rem; }
+.btnPropagate    { width: 100%; padding: 0.6rem; background: #7c3aed; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.875rem; }
+.btnPropagate:hover { background: #6d28d9; }
+.btnPropagateAll { width: 100%; padding: 0.6rem; background: #0e4f6b; color: #7dd3fc; border: 1px solid #0284c7; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.875rem; }
+.btnPropagateAll:hover { background: #0d4460; }
+.progressWrap { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.78rem; color: #60a5fa; }
+.progressBar  { height: 5px; background: #1e2435; border-radius: 3px; overflow: hidden; }
+.progressFill { height: 100%; background: #7c3aed; transition: width 0.3s; }
+
+/* Multi-mask proposal panel */
+.proposalPanel   { background: #131827; border: 1px solid #2d3552; border-radius: 6px; padding: 0.6rem 0.75rem; width: 100%; max-width: 820px; }
+.loadingProposals { font-size: 0.8rem; color: #60a5fa; }
+.proposalTitle   { font-size: 0.78rem; color: #94a3b8; margin: 0 0 0.5rem; }
+.proposalRow     { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.proposalBtn     { display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem; background: #1e2435; border: 2px solid; border-radius: 5px; color: #e2e8f0; font-size: 0.82rem; cursor: pointer; transition: background 0.12s; }
+.proposalBtn:hover { background: #2d3552; }
+.proposalNum     { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 0.72rem; }
+.proposalCancel  { padding: 0.3rem 0.6rem; background: #1e2435; border: 1px solid #2d3552; border-radius: 4px; color: #f87171; cursor: pointer; font-size: 0.82rem; }

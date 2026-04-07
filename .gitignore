@@ -1,0 +1,45 @@
+# Entorno
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Checkpoints SAM 2 (archivos grandes, no van en git)
+checkpoints/*.pt
+checkpoints/*.pth
+
+# Almacenamiento de videos y frames
+storage/
+
+# Base de datos local
+*.db
+*.sqlite
+
+# Logs
+*.log
+celerybeat-schedule
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Excluir carpeta de Claude y archivos invalidos
+.claude/
+nul
