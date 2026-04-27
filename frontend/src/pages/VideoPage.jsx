@@ -13,6 +13,7 @@ import {
   exportToGCS,
   exportDataset,
   getJobStatus,
+  getConfig,
 } from "../api/client";
 import useStore from "../store/useStore";
 import { labelToColor } from "../utils/colors";
@@ -29,6 +30,11 @@ export default function VideoPage() {
   const [labels, setLabels]             = useState([]);
   const [newLabel, setNewLabel]         = useState("");
   const [addingLabel, setAddingLabel]   = useState(false);
+
+  // Config de la fábrica (cargado al montar)
+  const [factoryBucket, setFactoryBucket]           = useState("");
+  const [factoryUrl, setFactoryUrl]                 = useState("http://34.42.231.172");
+  const [factoryDatasetsPrefix, setFactoryDatasetsPrefix] = useState("datasets/");
 
   // GCS Export state
   const [showGCSPanel, setShowGCSPanel] = useState(false);
@@ -63,6 +69,11 @@ export default function VideoPage() {
 
   useEffect(() => {
     load();
+    getConfig().then((cfg) => {
+      if (cfg.factory_bucket)      setFactoryBucket(cfg.factory_bucket);
+      if (cfg.factory_url)         setFactoryUrl(cfg.factory_url);
+      if (cfg.datasets_prefix)     setFactoryDatasetsPrefix(cfg.datasets_prefix);
+    }).catch(() => {});
   }, [projectId, videoId]);
 
   const handleAddLabel = async (e) => {
@@ -137,6 +148,54 @@ export default function VideoPage() {
     } catch (err) {
       setExporting(false);
       setExportError(err?.response?.data?.detail || "Error al lanzar exportación a GCS");
+    }
+  };
+
+  const handleExportToFactory = async () => {
+    if (!factoryBucket) {
+      setExportError("No hay bucket de fábrica configurado. Define ALPHA_PLUS_BUCKET en el backend.");
+      return;
+    }
+    setExporting(true);
+    setExportProgress(0);
+    setExportResult(null);
+    setExportError("");
+    stopPolling();
+
+    const prefix = `${factoryDatasetsPrefix}mentat/project_${projectId}/video_${videoId}`;
+    try {
+      const { job_id } = await exportToGCS(projectId, {
+        bucket_name: factoryBucket,
+        gcs_prefix: prefix,
+        format: gcsFormat,
+        train_split: 0.8,
+        approved_only: gcsApprOnly,
+        video_id: Number(videoId),
+      });
+
+      pollRef.current = setInterval(async () => {
+        try {
+          const job = await getJobStatus(job_id);
+          setExportProgress(job.progress ?? 0);
+          if (job.status === "success") {
+            stopPolling();
+            setExporting(false);
+            try { setExportResult(JSON.parse(job.result)); }
+            catch { setExportResult({ files_uploaded: "?" }); }
+          } else if (job.status === "error") {
+            stopPolling();
+            setExporting(false);
+            setExportError(job.error_message || "Error desconocido");
+          }
+        } catch {
+          stopPolling();
+          setExporting(false);
+          setExportError("Error al consultar estado del job");
+        }
+      }, 2000);
+    } catch (err) {
+      setExporting(false);
+      setExportError(err?.response?.data?.detail || "Error al lanzar exportación a la fábrica");
     }
   };
 
@@ -219,7 +278,47 @@ export default function VideoPage() {
 
           {showGCSPanel && (
             <div className={styles.gcsPanel}>
-              <h3 className={styles.subTitle}>Exportar a Google Cloud Storage</h3>
+              <h3 className={styles.subTitle}>Exportar dataset</h3>
+
+              {/* ── Sección rápida: fábrica de modelos ── */}
+              <div className={styles.factorySection}>
+                <div className={styles.factorySectionHeader}>
+                  <span className={styles.factorySectionTitle}>Fábrica de modelos</span>
+                  {factoryBucket
+                    ? <span className={styles.factoryBucketBadge}>gs://{factoryBucket}</span>
+                    : <span className={styles.factoryBucketMissing}>ALPHA_PLUS_BUCKET no configurado</span>
+                  }
+                </div>
+                <div className={styles.factoryControls}>
+                  <label className={styles.gcsLabel} style={{ marginBottom: 0 }}>
+                    Formato
+                    <select value={gcsFormat} onChange={(e) => setGcsFormat(e.target.value)} className={styles.gcsSelect}>
+                      <option value="yolo_seg">YOLO Segmentation (recomendado)</option>
+                      <option value="yolo_det">YOLO Detection (bbox)</option>
+                      <option value="coco">COCO JSON</option>
+                    </select>
+                  </label>
+                  <label className={styles.gcsLabel} style={{ marginBottom: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={gcsApprOnly}
+                      onChange={(e) => setGcsApprOnly(e.target.checked)}
+                    />
+                    {" "}Solo aprobadas
+                  </label>
+                  <button
+                    type="button"
+                    className={styles.btnFactory}
+                    onClick={handleExportToFactory}
+                    disabled={exporting || !factoryBucket}
+                  >
+                    {exporting ? `Exportando… ${exportProgress}%` : "Exportar a fábrica"}
+                  </button>
+                </div>
+              </div>
+
+              <details className={styles.manualDetails}>
+                <summary className={styles.manualSummary}>Exportar a otro bucket GCS</summary>
               <form onSubmit={handleExportGCS} className={styles.gcsForm}>
                 <label className={styles.gcsLabel}>
                   Formato
@@ -256,30 +355,6 @@ export default function VideoPage() {
                     onChange={(e) => setGcsPrefix(e.target.value)}
                   />
                 </label>
-                {/* Barra de progreso del job */}
-                {exporting && (
-                  <div className={styles.jobProgress}>
-                    <div className={styles.jobProgressBar}>
-                      <div className={styles.jobProgressFill} style={{ width: `${exportProgress}%` }} />
-                    </div>
-                    <span className={styles.jobProgressLabel}>Subiendo a GCS… {exportProgress}%</span>
-                  </div>
-                )}
-
-                {exportError && <p className={styles.errorMsg}>{exportError}</p>}
-                {exportResult && (
-                  <div className={styles.successBox}>
-                    <p>✅ {exportResult.files_uploaded} ficheros subidos a <strong>gs://{exportResult.bucket}/{exportResult.gcs_prefix}</strong></p>
-                    {exportResult.uris_sample?.length > 0 && (
-                      <ul className={styles.uriList}>
-                        {exportResult.uris_sample.map((u, i) => <li key={i}>{u}</li>)}
-                        {exportResult.files_uploaded > exportResult.uris_sample.length && (
-                          <li>… y {exportResult.files_uploaded - exportResult.uris_sample.length} más</li>
-                        )}
-                      </ul>
-                    )}
-                  </div>
-                )}
                 <div className={styles.gcsButtons}>
                   <button type="submit" className={styles.btnPrimary} disabled={exporting}>
                     {exporting ? `Subiendo… ${exportProgress}%` : "☁️ Subir a GCS"}
@@ -289,6 +364,45 @@ export default function VideoPage() {
                   </button>
                 </div>
               </form>
+              </details>
+
+              {/* ── Estado compartido: progreso, error, resultado ── */}
+              {exporting && (
+                <div className={styles.jobProgress}>
+                  <div className={styles.jobProgressBar}>
+                    <div className={styles.jobProgressFill} style={{ width: `${exportProgress}%` }} />
+                  </div>
+                  <span className={styles.jobProgressLabel}>Exportando… {exportProgress}%</span>
+                </div>
+              )}
+              {exportError && <p className={styles.errorMsg}>{exportError}</p>}
+              {exportResult && (
+                <div className={styles.successBox}>
+                  <p>✅ {exportResult.files_uploaded} ficheros subidos a <strong>gs://{exportResult.bucket}/{exportResult.gcs_prefix}</strong></p>
+                  {exportResult.uris_sample?.length > 0 && (
+                    <ul className={styles.uriList}>
+                      {exportResult.uris_sample.map((u, i) => <li key={i}>{u}</li>)}
+                      {exportResult.files_uploaded > exportResult.uris_sample.length && (
+                        <li>… y {exportResult.files_uploaded - exportResult.uris_sample.length} más</li>
+                      )}
+                    </ul>
+                  )}
+                  {exportResult.factory_dataset_id ? (
+                    <a
+                      className={styles.btnFactory}
+                      href={`${factoryUrl}/datasets`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Ver en fábrica de modelos →
+                    </a>
+                  ) : (
+                    <p className={styles.factoryNote}>
+                      Dataset en GCS. Regístralo manualmente en la fábrica si es necesario.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </section>

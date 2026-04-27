@@ -83,3 +83,6 @@ export const exportDataset = (projectId, data) =>
 
 export const exportToGCS = (projectId, data) =>
   api.post(`/projects/${projectId}/export/gcs`, data).then((r) => r.data);
+
+// ---- Config ----
+export const getConfig = () => api.get("/config").then((r) => r.data);

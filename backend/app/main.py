@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
-from app.api import projects, videos, annotations, export, jobs
+from app.api import projects, videos, annotations, export, jobs, config
 
 app = FastAPI(
     title="EXPAI Pre-Labeling Tool",
@@ -24,6 +24,7 @@ app.include_router(videos.router, prefix="/projects", tags=["videos"])
 app.include_router(annotations.router, prefix="/annotations", tags=["annotations"])
 app.include_router(export.router, prefix="/projects", tags=["export"])
 app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+app.include_router(config.router, tags=["config"])
 
 # Servir archivos estaticos (frames extraidos)
 storage_path = os.environ.get("STORAGE_PATH", "/app/storage")

@@ -39,7 +39,7 @@ def export_dataset(
             train_split=data.train_split,
             approved_only=data.approved_only,
         )
-    elif data.format == "yolo":
+    elif data.format in ("yolo", "yolo_det"):
         zip_path = export_yolo(
             project_id=project_id,
             db=db,

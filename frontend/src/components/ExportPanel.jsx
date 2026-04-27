@@ -7,7 +7,7 @@ import { exportDataset } from "../api/client";
 import styles from "./ExportPanel.module.css";
 
 export default function ExportPanel({ projectId, onClose }) {
-  const [format, setFormat] = useState("yolo");
+  const [format, setFormat] = useState("yolo_seg");
   const [trainSplit, setTrainSplit] = useState(0.8);
   const [approvedOnly, setApprovedOnly] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -45,16 +45,20 @@ export default function ExportPanel({ projectId, onClose }) {
         <div className={styles.field}>
           <label>Formato</label>
           <div className={styles.radioGroup}>
-            {["yolo", "coco"].map((f) => (
-              <label key={f} className={styles.radio}>
+            {[
+              { value: "yolo_seg", label: "YOLO Segmentation (recomendado)" },
+              { value: "yolo", label: "YOLO Detection (.txt)" },
+              { value: "coco", label: "COCO JSON" },
+            ].map(({ value, label }) => (
+              <label key={value} className={styles.radio}>
                 <input
                   type="radio"
                   name="format"
-                  value={f}
-                  checked={format === f}
-                  onChange={() => setFormat(f)}
+                  value={value}
+                  checked={format === value}
+                  onChange={() => setFormat(value)}
                 />
-                {f === "yolo" ? "YOLO Detection (.txt)" : "COCO JSON"}
+                {label}
               </label>
             ))}
           </div>

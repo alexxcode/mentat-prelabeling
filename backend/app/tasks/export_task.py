@@ -58,6 +58,22 @@ def export_to_gcs_task(
             progress_callback=_progress,
         )
 
+        # Notificar a la fábrica de modelos (fallo silencioso)
+        from app.models import Project
+        from app.services.factory_client import notify_factory
+        project = db.get(Project, project_id)
+        project_name = project.name if project else f"project_{project_id}"
+        factory_dataset_id = notify_factory(
+            project_name=project_name,
+            fmt=fmt,
+            project_id=project_id,
+            gcs_prefix=gcs_prefix,
+            bucket_name=bucket_name,
+            files_uploaded=result.get("files_uploaded", 0),
+        )
+        if factory_dataset_id is not None:
+            result["factory_dataset_id"] = factory_dataset_id
+
         job.status = "success"
         job.progress = 100
         job.result = json.dumps(result)
