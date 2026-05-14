@@ -43,3 +43,18 @@ Thumbs.db
 # Excluir carpeta de Claude y archivos invalidos
 .claude/
 nul
+
+# Documentos pesados (DocMENTAT.docx, expai_roadmap.docx)
+*.docx
+
+# Videos de prueba en raíz
+/Videos/
+
+# Scripts utilitarios sueltos no esenciales
+crear_documentacion.py
+list_img.py
+gcloud_images.txt
+mat.md
+
+# Carpeta legacy si existe
+/Pre-Labeling-Tool/
