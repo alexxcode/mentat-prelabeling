@@ -43,9 +43,9 @@ MENTAT corre en una VM con GPU (Tesla T4) y se integra con la fábrica de modelo
 ```
                             GCP — multi-project, multi-region
 
-  ┌─ Proyecto: mentat-489120 ──────────────┐    ┌─ Proyecto: alphaplus-prod ─────────────┐
-  │   VM: mentat-489120 (asia-east1-c)     │    │   VM: fabricademodelos-app             │
-  │   IP: 34.80.229.254                    │    │   IP: 34.42.231.172                    │
+  ┌─ Proyecto: <MENTAT_PROJECT_ID> ──────────────┐    ┌─ Proyecto: <ALPHAPLUS_PROJECT_ID> ─────────────┐
+  │   VM: <MENTAT_PROJECT_ID> (asia-east1-c)     │    │   VM: fabricademodelos-app             │
+  │   IP: <MENTAT_VM_IP>                    │    │   IP: <ALPHAPLUS_VM_IP>                    │
   │   GPU: Tesla T4 16 GB                  │    │                                         │
   │                                        │    │   • FastAPI app                        │
   │   ┌──────────────────────────────┐    │    │   • Recibe POST /api/datasets/mentat/  │
@@ -63,8 +63,8 @@ MENTAT corre en una VM con GPU (Tesla T4) y se integra con la fábrica de modelo
   └────────────────┬───────────────────────┘    └────────────────┬───────────────────────┘
                    │                                              │
                    │                                              │
-                   │     Google Cloud Storage (alphaplus-prod)    │
-                   │     gs://alphaplus-data-prod/                │
+                   │     Google Cloud Storage (<ALPHAPLUS_PROJECT_ID>)    │
+                   │     gs://<ALPHAPLUS_BUCKET>/                │
                    └────────▶ datasets/mentat/project_{N}/...  ◀──┘
                               ├── images/{train,val}/*.jpg
                               ├── labels/{train,val}/*.txt
@@ -209,7 +209,7 @@ El **backend** y el **worker** comparten la misma imagen y mismo volumen (`./bac
 │      POST /projects/{id}/export/gcs → {job_id}                           │
 │      ↳ Celery worker:                                                    │
 │         1. Construye dataset YOLO-Seg/Det o COCO en disco                │
-│         2. Sube archivos a gs://alphaplus-data-prod/datasets/mentat/...  │
+│         2. Sube archivos a gs://<ALPHAPLUS_BUCKET>/datasets/mentat/...  │
 │         3. Llama a POST http://alphaplus/api/datasets/mentat/register    │
 │         4. AlphaPlus encola training en su VM GPU                        │
 │      ↳ result.factory_dataset_id → frontend muestra link a fábrica       │
@@ -342,7 +342,7 @@ Respuesta esperada:
 
 ```json
 {
-  "gcs_bucket":        "alphaplus-data-prod",
+  "gcs_bucket":        "<ALPHAPLUS_BUCKET>",
   "datasets_prefix":   "datasets/",
   "register_endpoint": "/api/datasets/mentat/register",
   "api_version":       "1.0"
@@ -364,7 +364,7 @@ El resultado se cachea en memoria. Si el endpoint no responde, MENTAT cae a `ALP
 │         ├─ 1. build dataset en /tmp                      │
 │         │                                                 │
 │         ├─ 2. upload_to_gcs(                             │
-│         │       bucket="alphaplus-data-prod",            │
+│         │       bucket="<ALPHAPLUS_BUCKET>",            │
 │         │       prefix="datasets/mentat/project_N/...")  │
 │         │                                                 │
 │         └─ 3. notify_factory()                           │
@@ -372,7 +372,7 @@ El resultado se cachea en memoria. Si el endpoint no responde, MENTAT cae a `ALP
 │               {                                           │
 │                 "project_name": "...",                   │
 │                 "format": "yolo_seg",                    │
-│                 "bucket": "alphaplus-data-prod",         │
+│                 "bucket": "<ALPHAPLUS_BUCKET>",         │
 │                 "gcs_prefix": "datasets/mentat/...",     │
 │                 "files_uploaded": 755,                   │
 │                 "source_project_id": N                   │
@@ -384,7 +384,7 @@ El resultado se cachea en memoria. Si el endpoint no responde, MENTAT cae a `ALP
    {
      "factory_dataset_id": 42,
      "files_uploaded": 755,
-     "bucket": "alphaplus-data-prod",
+     "bucket": "<ALPHAPLUS_BUCKET>",
      "gcs_prefix": "datasets/mentat/project_N/video_M"
    }
 ```
@@ -404,10 +404,10 @@ El frontend renderiza un botón **"Ver en fábrica de modelos →"** que enlaza 
 La service account por defecto de la VM de MENTAT (`{PROJECT_NUMBER}-compute@developer.gserviceaccount.com`) necesita escritura sobre el bucket de AlphaPlus:
 
 ```bash
-gcloud storage buckets add-iam-policy-binding gs://alphaplus-data-prod \
+gcloud storage buckets add-iam-policy-binding gs://<ALPHAPLUS_BUCKET> \
   --member=serviceAccount:{MENTAT_PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
   --role=roles/storage.objectAdmin \
-  --project=alphaplus-prod
+  --project=<ALPHAPLUS_PROJECT_ID>
 ```
 
 Sin esto: `403 Forbidden — does not have storage.objects.create access`.
@@ -557,30 +557,17 @@ http://IP_PUBLICA_VM/api/docs ← Swagger UI
 
 ## Configuración por variables de entorno
 
-```env
-# ─── Base de datos / cola ───
-DATABASE_URL=postgresql://postgres:expai_secret@db:5432/expai
-REDIS_URL=redis://redis:6379
+Consulta `.env.example` para la lista completa de variables. Las claves principales son:
 
-# ─── Almacenamiento ───
-STORAGE_PATH=/app/storage
-
-# ─── SAM 2 ───
-SAM2_MODEL=sam2_hiera_base_plus
-SAM2_CHECKPOINT=/app/checkpoints/sam2_hiera_base_plus.pt
-
-# ─── Exportación ───
-YOLO_CONFIDENCE_THRESHOLD=0.5
-
-# ─── Frontend ───
-VITE_API_URL=/api      # producción con nginx
-# VITE_API_URL=http://localhost:8000  # dev local sin nginx
-
-# ─── Fábrica de modelos AlphaPlus ───
-ALPHA_PLUS_URL=http://34.42.231.172
-ALPHA_PLUS_TIMEOUT=15
-ALPHA_PLUS_BUCKET=alphaplus-data-prod   # opcional, si AlphaPlus no expone /api/config
-```
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_URL` | Cadena de conexión PostgreSQL |
+| `REDIS_URL` | Broker Celery |
+| `STORAGE_PATH` | Ruta donde se persisten vídeos y frames |
+| `SAM2_MODEL` / `SAM2_CHECKPOINT` | Variante y checkpoint de SAM 2 |
+| `VITE_API_URL` | `/api` en producción (nginx) o `http://localhost:8000` en dev |
+| `ALPHA_PLUS_URL` | URL interna de la fábrica de modelos |
+| `ALPHA_PLUS_BUCKET` | Override del bucket si la fábrica no expone `/api/config` |
 
 > ⚠️ Tras editar el `.env`, **`docker compose restart` NO es suficiente** — no recarga `env_file`. Usa `docker compose up -d` para recrear los contenedores con las nuevas variables.
 
